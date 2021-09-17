@@ -7,12 +7,12 @@
 # Чтобы запустить бота: напишите в терминале "python main.py"
 # Чтобы остановить бота: нажмите Ctrl+C и подождите
 
-import requests
+import datetime
 import config
 import telebot
-from lowprice import search_lowprice
-from telebot import types
-from telebot.types import InlineKeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from hotels import search_hotels
+from foto import get_picture
+from typing import Callable, Any
 
 
 bot = telebot.TeleBot(config.token)
@@ -20,48 +20,165 @@ bot = telebot.TeleBot(config.token)
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-
+    '''
+    Функция отвечает за диалог с пользователем
+    и за получение команд и входных данных от него
+    '''
     if message.text == "Привет" or message.text == "привет":
-        bot.send_message(message.from_user.id, "Привет, чем я могу тебе помочь?"
+        logging(message.text)
+        bot.send_message(message.from_user.id, "Привет, чем я могу вам помочь?"
                                                "\n Существующие команды:"
                                                "\n /lowprice - поиск самых дешёвых отелей в городе"
                                                "\n /highprice - поиск самых дорогих отелей в городе"
                                                "\n /bestdeal - отели, оптимальные по цене и расположению"
-                                               "\n /history - просмотреть историю поиска отелей")
+                                               "\n /history - получить историю поиска отелей")
 
     elif message.text == "/help":
-        bot.send_message(message.from_user.id, "Напиши Привет")
+        logging(message.text)
+        bot.send_message(message.from_user.id, "Напишите Привет")
     elif message.text == "/hello_world":
-        bot.send_message(message.from_user.id, "Я Telegram-бот. Мой автор: Байбеков Вадим Альбертович")
+        logging(message.text)
+        bot.send_message(message.from_user.id, "Это Telegram-бот по поиску отелей. Автор Байбеков Вадим Альбертович")
     elif message.text == "/lowprice":
-        bot.send_message(message.from_user.id, "Введите название города")
+        logging(message.text)
+        bot.send_message(message.from_user.id, "Введите название города английскими буквами (пример: las vegas)")
         bot.register_next_step_handler(message, get_city)
+        global status_price
+        status_price = 'low'
+    elif message.text == "/highprice":
+        logging(message.text)
+        bot.send_message(message.from_user.id, "Введите название города английскими буквами (пример: boston)")
+        bot.register_next_step_handler(message, get_city)
+        status_price = 'high'
+    elif message.text == "/bestdeal":
+        logging(message.text)
+        bot.send_message(message.from_user.id, "Введите название города английскими буквами (пример: miami)")
+        bot.register_next_step_handler(message, get_city)
+        status_price = 'optional'
+    elif message.text == "/history":
+        with open('history.log ', 'r', encoding='UTF-8') as file:
+            bot.send_document(message.from_user.id, file)
     else:
-        bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help или /hello_world.")
+        logging(message.text)
+        bot.send_message(message.from_user.id, "Я вас не понимаю. Напишите /help или /hello_world.")
 
 
 def get_city(message):  # получаем название города
     global city
     city = message.text
-    bot.send_message(message.from_user.id, 'Введите кол-во отелей')
+    logging(message.text)
+    city = (city.title())
+    bot.send_message(message.from_user.id, 'Введите кол-во отелей (не более 8)')
     print(city)
     bot.register_next_step_handler(message, get_count_hotels)
 
 
-def get_count_hotels(message):
+def get_count_hotels(message):  # получаем кол-во отелей
     global count_hotels
     count_hotels = message.text
+    logging(message.text)
     print(count_hotels)
-    value = search_lowprice(city, count_hotels)
-    bot.send_message(message.from_user.id, value)
-    #bot.register_next_step_handler(message, searching)
+    if int(count_hotels) > 8:  # По ТЗ определяем заранее определенный максимум в 8 отелей
+        bot.send_message(message.from_user.id, "Вы ввели больше 8 отелей. Хотите сломать программу?! :)")
+        bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
+    else:
+        if status_price == 'optional':
+            bot.send_message(message.from_user.id, 'Введите диапазон цен через двоеточие (пример: 10:40)')
+            bot.register_next_step_handler(message, get_price)
+        else:
+            optional_price = None
+            optional_distance = None
+            value = search_hotels(city, count_hotels, status_price, optional_price, optional_distance)
+            bot.send_message(message.from_user.id, value)
+            if value == 'Введен не существующий город или нет отелей соответствующих условиям поиска':
+                bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
+            else:
+                global hotels
+                hotels = value[1]   # Получаем ID отелей для поиска фото
+                global hotels_names
+                hotels_names = value[2]  # Получаем названия отелей для вывода клиенту перед фото
+                print(hotels_names)
+                bot.send_message(message.from_user.id, 'Вы хотите увидеть фото выбранных отелей? (пример: да)')
+                bot.register_next_step_handler(message, get_img)
 
-'''
-def searching(message):
-    print(city)
-    print(count_hotels)
-    bot.send_message(message.from_user.id, search_lowprice(city, count_hotels))
-'''
+
+def get_price(message):  # диапазон цен для поиска отелей, если status_price = выбран опционально
+    global optional_price
+    price = message.text
+    logging(message.text)
+    optional_price = price.split(':')
+    print('Диапазон цен:', optional_price)
+    if float(optional_price[0]) > float(optional_price[1]):
+        bot.send_message(message.from_user.id, "Вообще то первое число должно быть меньше второго. "
+                                               "Хотите сломать программу?! :)")
+        bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
+    else:
+        bot.send_message(message.from_user.id, 'Введите диапазон расстояния отеля от центра'
+                                               ' через запятую (пример: 5:20)')
+        bot.register_next_step_handler(message, get_distance)
+
+
+def get_distance(message):  # дистанция от центра города, если status_price = выбран опционально
+    global optional_distance
+    distance = message.text
+    logging(message.text)
+    optional_distance = distance.split(':')
+    print('Диапазон расстояния от центра города:', optional_distance)
+    if float(optional_distance[0]) > float(optional_distance[1]):
+        bot.send_message(message.from_user.id, "Вообще то первое число должно быть меньше второго. "
+                                               "Хотите сломать программу?! :)")
+        bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
+    else:
+        value = search_hotels(city, count_hotels, status_price, optional_price, optional_distance)
+        bot.send_message(message.from_user.id, value)
+        global hotels
+        hotels = value[1]  # Получаем ID отелей для поиска фото
+        global hotels_names
+        hotels_names = value[2]  # Получаем названия отелей для вывода клиенту перед фото
+        print(hotels_names)
+        bot.send_message(message.from_user.id, 'Вы хотите увидеть фото выбранных отелей? (пример: нет)')
+        bot.register_next_step_handler(message, get_img)
+
+
+def get_img(message):   # получаем ответ, нужны фотки отелей или нет
+    answer = message.text
+    logging(message.text)
+    if answer == "Да" or answer == "да":
+        bot.send_message(message.from_user.id,
+                         'Сколько фото вы хотите увидеть по каждому отелю (не более 3)? (пример: 2)')
+        bot.register_next_step_handler(message, get_count_picture)
+    else:
+        print('Программа начинается заново')
+        bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
+
+
+def get_count_picture(message):  # узнаем, сколько нужно фоток
+    global count_picture
+    count_picture = message.text
+    logging(message.text)
+    if int(count_picture) > 3:  # По ТЗ определяем заранее определенный максимум в 3 фотки
+        bot.send_message(message.from_user.id, "Вы ввели больше 3 фото. Хотите сломать программу?! :)")
+        bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
+    else:
+        value_picture = get_picture(hotels[:int(count_hotels)], int(count_picture))
+        print(value_picture)
+        # Код ниже нужен, для вывода названий отелей перед фотками
+        count_name = 0
+        count = 0
+        bot.send_message(message.from_user.id, hotels_names[count_name])
+        for i_pic in value_picture:
+            if count == int(count_picture):
+                count_name += 1
+                bot.send_message(message.from_user.id, hotels_names[count_name])
+                count = 0
+            bot.send_photo(message.from_user.id, i_pic)
+            count += 1
+
+
+def logging(message):  # Функция записи всех команд в лог
+    with open('history.log ', 'a', encoding='UTF-8') as file:
+        file.write('\n ' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + '   Команда: ' + message)
+
 
 if __name__ == '__main__':
     bot.polling(none_stop=True, interval=0)
