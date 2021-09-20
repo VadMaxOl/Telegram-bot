@@ -1,1 +1,4 @@
 config.py
+history.log
+.idea/
+__pycache__/

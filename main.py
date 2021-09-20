@@ -12,7 +12,6 @@ import config
 import telebot
 from hotels import search_hotels
 from foto import get_picture
-from typing import Callable, Any
 
 
 bot = telebot.TeleBot(config.token)
@@ -83,7 +82,7 @@ def get_count_hotels(message):  # получаем кол-во отелей
         bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
     else:
         if status_price == 'optional':
-            bot.send_message(message.from_user.id, 'Введите диапазон цен через двоеточие (пример: 10:40)')
+            bot.send_message(message.from_user.id, 'Введите диапазон цен через дефис (пример: 10-40)')
             bot.register_next_step_handler(message, get_price)
         else:
             optional_price = None
@@ -106,7 +105,7 @@ def get_price(message):  # диапазон цен для поиска отел�
     global optional_price
     price = message.text
     logging(message.text)
-    optional_price = price.split(':')
+    optional_price = price.split('-')
     print('Диапазон цен:', optional_price)
     if float(optional_price[0]) > float(optional_price[1]):
         bot.send_message(message.from_user.id, "Вообще то первое число должно быть меньше второго. "
@@ -114,7 +113,7 @@ def get_price(message):  # диапазон цен для поиска отел�
         bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
     else:
         bot.send_message(message.from_user.id, 'Введите диапазон расстояния отеля от центра'
-                                               ' через запятую (пример: 5:20)')
+                                               ' через дефис (пример: 5-20)')
         bot.register_next_step_handler(message, get_distance)
 
 
@@ -122,7 +121,7 @@ def get_distance(message):  # дистанция от центра города,
     global optional_distance
     distance = message.text
     logging(message.text)
-    optional_distance = distance.split(':')
+    optional_distance = distance.split('-')
     print('Диапазон расстояния от центра города:', optional_distance)
     if float(optional_distance[0]) > float(optional_distance[1]):
         bot.send_message(message.from_user.id, "Вообще то первое число должно быть меньше второго. "
@@ -130,7 +129,7 @@ def get_distance(message):  # дистанция от центра города,
         bot.send_message(message.from_user.id, "Тогда начинаем заново. Напишите: 'привет'")
     else:
         value = search_hotels(city, count_hotels, status_price, optional_price, optional_distance)
-        bot.send_message(message.from_user.id, value)
+        bot.send_message(message.from_user.id, value) 
         global hotels
         hotels = value[1]  # Получаем ID отелей для поиска фото
         global hotels_names
