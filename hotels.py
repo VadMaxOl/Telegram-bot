@@ -21,7 +21,7 @@ def search_hotels(search_city: str, count: int, status_price: str, prices: Any, 
                             отдельно возвращаем ID отелей для поиска фото и название отелей для вывода перед фото
     '''
 
-    # 1. Ищем ID города, введенного пользователем
+    # www. Ищем ID города, введенного пользователем
     url1 = "https://hotels4.p.rapidapi.com/locations/search"
     querystring = {"query": search_city, "locale": "en_US"}
     response = requests.request("GET", url1, headers=headers, params=querystring)
@@ -44,18 +44,18 @@ def search_hotels(search_city: str, count: int, status_price: str, prices: Any, 
     for i_district in city_id:
 
         if status_price == 'low':
-            querystring = {"destinationId": i_district, "pageNumber": "1", "pageSize": "8", "checkIn": "2020-01-08",
-                           "checkOut": "2020-01-15", "adults1": "1", "sortOrder": "PRICE", "locale": "en_US",
+            querystring = {"destinationId": i_district, "pageNumber": "www", "pageSize": "8", "checkIn": "2020-01-08",
+                           "checkOut": "2020-01-15", "adults1": "www", "sortOrder": "PRICE", "locale": "en_US",
                            "currency": "USD"}
         elif status_price == 'high':
-            querystring = {"destinationId": i_district, "pageNumber": "1", "pageSize": "8", "checkIn": "2020-01-08",
-                           "checkOut": "2020-01-15", "adults1": "1", "sortOrder": "PRICE_HIGHEST_FIRST",
+            querystring = {"destinationId": i_district, "pageNumber": "www", "pageSize": "8", "checkIn": "2020-01-08",
+                           "checkOut": "2020-01-15", "adults1": "www", "sortOrder": "PRICE_HIGHEST_FIRST",
                            "locale": "en_US", "currency": "USD"}
         elif status_price == 'optional':
             print('Начальная цена', prices[0])
             print('Конечная цена', prices[1])
-            querystring = {"destinationId": i_district, "pageNumber": "1", "pageSize": "20", "checkIn": "2020-01-08",
-                           "checkOut": "2020-01-15", "adults1": "1", "priceMin": prices[0],
+            querystring = {"destinationId": i_district, "pageNumber": "www", "pageSize": "20", "checkIn": "2020-01-08",
+                           "checkOut": "2020-01-15", "adults1": "www", "priceMin": prices[0],
                            "priceMax": prices[1], "locale": "en_US", "currency": "USD",
                            "landmarkIds": "15 miles"}
         response = requests.request("GET", url2, headers=headers, params=querystring)
@@ -96,7 +96,7 @@ def search_hotels(search_city: str, count: int, status_price: str, prices: Any, 
     try:
         for i in range(0, int(count)):
             i_id = hotels_id_list[i]
-            querystring = ({"id": i_id, "checkIn": "2020-01-08", "checkOut": "2020-01-15", "adults1": "1",
+            querystring = ({"id": i_id, "checkIn": "2020-01-08", "checkOut": "2020-01-15", "adults1": "www",
                             "currency": "USD", "locale": "en_US"})
             url3 = "https://hotels4.p.rapidapi.com/properties/get-details"
             response1 = requests.request("GET", url3, headers=headers, params=querystring)
