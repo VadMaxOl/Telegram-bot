@@ -14,13 +14,11 @@ history - this log file will appear in the process. Teams and found hotels are s
 
 To run the program, you must:
 
-Copy the repository to your computer
+1. Copy the repository to your computer
+2. To install the necessary libraries, write in the terminal: pip install -r requirements.txt
+3. To launch the bot: write "python" in the PyCharm terminal main.py " (or in any other IDE)
+4. To stop the bot: press Ctrl+C and wait
 
-To install the necessary libraries, write in the terminal: pip install -r requirements.txt
-
-To launch the bot: write "python" in the PyCharm terminal main.py " (or in any other IDE)
-
-To stop the bot: press Ctrl+C and wait
 After launching the program, the user can write any message.
 If the entered message is not "Hello" or "hello", the bot will ask the user to enter the command /help or /helloworld.
 List of commands available to the user:
