@@ -41,12 +41,12 @@ The description of this command does not differ from the /lowprice command. The 
 From expensive hotels to cheap ones.
 /bestdeal - hotels that are optimal in price and location.
 After entering the command, it is requested:
-1. the search city.
-2. number of hotels.
-3. the price range of the cost of hotels per day. You need to enter the range with a hyphen and without spaces (example: 10-50)
-4. the range of the distance of hotels from the city center. You need to enter the range with a hyphen and without spaces (example: 5-30)
-5. does the user want to see photos of hotels
-6. number of hotel photos
+4.1 the search city.
+4.2 number of hotels.
+4.3 the price range of the cost of hotels per day. You need to enter the range with a hyphen and without spaces (example: 10-50)
+4.4 the range of the distance of hotels from the city center. You need to enter the range with a hyphen and without spaces (example: 5-30)
+4.5 does the user want to see photos of hotels
+4.6 number of hotel photos
 /history is a command that allows you to get the search history of hotels as a separate file.
 The file will contain the history of commands entered by the user with the date and time.
 And also, found hotels.
