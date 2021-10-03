@@ -6,12 +6,12 @@ pictures = []
 
 def get_picture(id_hotels: list, count: int) -> list:
 
-    '''
+    """
     Функция ищет фотки по ID отелей
     :param id_hotels:   ID отелей
     :param count:       Кол-во фоток
     :return:            Список с URL фото
-    '''
+    """
 
     pictures.clear()
     try:
@@ -21,7 +21,7 @@ def get_picture(id_hotels: list, count: int) -> list:
 
             headers = {
                 'x-rapidapi-host': "hotels4.p.rapidapi.com",
-                'x-rapidapi-key': "cf825994d7mshb53d6caefe289f8p181124jsn1e81637b492b"
+                'x-rapidapi-key': "3115c47527mshe157c6125c82578p169d60jsn819a98b1d917"
                 }
 
             response = requests.request("GET", url, headers=headers, params=querystring)

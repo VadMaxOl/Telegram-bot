@@ -4,13 +4,13 @@ from typing import Any
 
 headers = {
     'x-rapidapi-host': "hotels4.p.rapidapi.com",
-    'x-rapidapi-key': "cf825994d7mshb53d6caefe289f8p181124jsn1e81637b492b"
+    'x-rapidapi-key': "3115c47527mshe157c6125c82578p169d60jsn819a98b1d917"
     }
 
 
 def search_hotels(search_city: str, count: int, status_price: str, prices: Any, distances: Any) -> Any:
 
-    '''
+    """
     Функция по следующим данным от пользователя ищет отели.
     :param search_city:     передается название города (английскими буквами)
     :param count:           передается кол-во отелей
@@ -19,7 +19,7 @@ def search_hotels(search_city: str, count: int, status_price: str, prices: Any, 
     :param distances:       дистанция от центра города, если status_price = выбран опционально
     :return:                название локации, название отеля, адрес, расстояние от центра, цена за сутки
                             отдельно возвращаем ID отелей для поиска фото и название отелей для вывода перед фото
-    '''
+    """
 
     # www. Ищем ID города, введенного пользователем
     url1 = "https://hotels4.p.rapidapi.com/locations/search"
@@ -28,7 +28,7 @@ def search_hotels(search_city: str, count: int, status_price: str, prices: Any, 
     city_list = response.json()
     city_id = []
     print('Статус цены:', status_price)
-    for i_el in city_list["suggestions"]:
+    for i_el in city_list['suggestions']:
         for i in (i_el['entities']):
             if search_city == i['name']:
                 print('Город:', i['name'])
@@ -56,8 +56,7 @@ def search_hotels(search_city: str, count: int, status_price: str, prices: Any, 
             print('Конечная цена', prices[1])
             querystring = {"destinationId": i_district, "pageNumber": "www", "pageSize": "20", "checkIn": "2020-01-08",
                            "checkOut": "2020-01-15", "adults1": "www", "priceMin": prices[0],
-                           "priceMax": prices[1], "locale": "en_US", "currency": "USD",
-                           "landmarkIds": "15 miles"}
+                           "priceMax": prices[1], "locale": "en_US", "currency": "USD"}
         response = requests.request("GET", url2, headers=headers, params=querystring)
         value_list1 = response.json()
         try:

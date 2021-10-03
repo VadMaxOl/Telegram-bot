@@ -160,23 +160,26 @@ def get_count_picture(message):  # узнаем, сколько нужно фо�
     global count_picture
     count_picture = message.text
     logging(message.text)
-    if int(count_picture) > 3:  # По ТЗ определяем заранее определенный максимум в 3 фотки
-        bot.send_message(message.chat.id, "Вы ввели больше 3 фото. Хотите сломать программу?! :)")
-        bot.send_message(message.chat.id, "Тогда начинаем заново. Напишите: 'привет'")
-    else:
-        value_picture = get_picture(hotels[:int(count_hotels)], int(count_picture))
-        print(value_picture)
-        # Код ниже нужен, для вывода названий отелей перед фотками
-        count_name = 0
-        count = 0
-        bot.send_message(message.from_user.id, hotels_names[count_name])
-        for i_pic in value_picture:
-            if count == int(count_picture):
-                count_name += 1
-                bot.send_message(message.chat.id, hotels_names[count_name])
-                count = 0
-            bot.send_photo(message.chat.id, i_pic)
-            count += 1
+    try:
+        if int(count_picture) > 3:  # По ТЗ определяем заранее определенный максимум в 3 фотки
+            bot.send_message(message.chat.id, "Вы ввели больше 3 фото. Хотите сломать программу?! :)")
+            bot.send_message(message.chat.id, "Тогда начинаем заново. Напишите: 'привет'")
+        else:
+            value_picture = get_picture(hotels[:int(count_hotels)], int(count_picture))
+            print(value_picture)
+            # Код ниже нужен, для вывода названий отелей перед фотками
+            count_name = 0
+            count = 0
+            bot.send_message(message.from_user.id, hotels_names[count_name])
+            for i_pic in value_picture:
+                if count == int(count_picture):
+                    count_name += 1
+                    bot.send_message(message.chat.id, hotels_names[count_name])
+                    count = 0
+                bot.send_photo(message.chat.id, i_pic)
+                count += 1
+    except ValueError:
+        bot.send_message(message.chat.id, "Вы ввели не число! Тогда начинаем заново. Напишите: 'привет'")
 
 
 def logging(message):  # Функция записи всех команд в лог
