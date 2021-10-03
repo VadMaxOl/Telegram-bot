@@ -26,27 +26,27 @@ List of commands available to the user:
 /help - when clicked, the message "Write Hello" will appear
 /helloworld - when clicked, "This is a Telegram bot for finding hotels. Author Baibekov Vadim Albertovich"
 / lowprice - search for the cheapest hotels in the city.
-a) After clicking, the user will be prompted to enter the search city.
+1. After clicking, the user will be prompted to enter the search city.
 The city must be entered in English letters (for example, boston). The city, preferably, should be large.
 It doesn't matter for the program - the name of the city will be entered with a capital letter or with a small one.
-b) Next, the program will ask: "Enter the number of hotels (no more than 8)"
+2. Next, the program will ask: "Enter the number of hotels (no more than 8)"
 The number of 8 hotels is a limitation on the TOR to reduce the query execution time (10-15 seconds)
 The program will find the cheapest hotels according to a pre-established sorting method (from cheap to expensive).
-c) After displaying the list of hotels, the bot will ask: "Do you want to see photos of selected hotels?"
+3. After displaying the list of hotels, the bot will ask: "Do you want to see photos of selected hotels?"
 Answer options: "Yes", "yes". With any other response, the program terminates and starts again.
-d) If the answer to the previous question was yes, the bot will ask you to enter the number of photos to view for each hotel.
+4. If the answer to the previous question was yes, the bot will ask you to enter the number of photos to view for each hotel.
 There is a limit on TK - a maximum of 3 photos. After the photo is output, the program terminates and waits for the next command.
 /highprice - search for the most expensive hotels in the city.
 The description of this command does not differ from the /lowprice command. The only difference is that reverse sorting is used here.
 From expensive hotels to cheap ones.
 /bestdeal - hotels that are optimal in price and location.
 After entering the command, it is requested:
-a) the search city.
-b) number of hotels.
-c) the price range of the cost of hotels per day. You need to enter the range with a hyphen and without spaces (example: 10-50)
-d) the range of the distance of hotels from the city center. You need to enter the range with a hyphen and without spaces (example: 5-30)
-e) does the user want to see photos of hotels
-f) number of hotel photos
+1. the search city.
+2. number of hotels.
+3. the price range of the cost of hotels per day. You need to enter the range with a hyphen and without spaces (example: 10-50)
+4. the range of the distance of hotels from the city center. You need to enter the range with a hyphen and without spaces (example: 5-30)
+5. does the user want to see photos of hotels
+6. number of hotel photos
 /history is a command that allows you to get the search history of hotels as a separate file.
 The file will contain the history of commands entered by the user with the date and time.
 And also, found hotels.
